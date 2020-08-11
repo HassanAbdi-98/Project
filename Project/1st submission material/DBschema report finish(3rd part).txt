@@ -1,0 +1,38 @@
+Int sales report
+
+    data user will typein: period(start - end)
+
+
+    SELECT row_number() over(order by Blank.blankID) as row_number, blankID, sumPriceUSD, exChangeRate, sumPriceLocalCurrency, tax, （ cashPayment+creditCardPayment+ tax ）, cashPayment, creditCardPayment, (cashPayment + creditCardPayment), (cashPayment + creditCardPayment), tax FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.exChangeRateID = ExChangeRate.exChangeRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (444 OR 440 OR 420) AND "start"<Sales.generationDate<"end";
+    // list all the info about international blank 
+
+    SELECT COUNT(blankID), SUM(sumPriceUSD), SUM(sumPriceLocalCurrency), SUM(tax), SUM(sumPriceLocalCurrency+creditCardPayment+tax),SUM(cashPayment), SUM(creditCardPayment), SUM(cashPayment+creditCardPayment+tax), SUM(cashPayment+creditCardPayment), SUM(tax) FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.exChangeRateID = ExChangeRate.exChangeRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (444 OR 440 OR 420) AND "start"<Sales.generationDate<"end"; 
+    // show the sum of data
+
+    SELECT SUM(cashPayment+creditCardPayment)*CommissionRate FROM Sales INNER JOIN CommissionRate ON Sales.commissionRateID = CommissionRate.commissionRateID WHERE blankType = (444 OR 440 OR 420) AND "start"<Sales.generationDate<"end";
+    // calculate total commission rate
+
+    SELECT SUM(cashPayment+creditCardPayment)*(1-CommissionRate), SUM(tax) FROM Sales INNER JOIN CommissionRate ON Sales.commissionRateID = CommissionRate.commissionRateID WHERE blankType = (444 OR 440 OR 420) AND "start"<Sales.generationDate<"end";
+    // calculate net amount
+
+    SELECT SUM(cashPayment+creditCardPayment+tax)-SUM(cashPayment+creditCardPayment)*CommissionRate-SUM(tax) FROM Sales INNER JOIN CommissionRate ON Sales.commissionRateID = CommissionRate.commissionRateID WHERE blankType = (444 OR 440 OR 420) AND "start"<Sales.generationDate<"end";
+    // calculate Total net amount for bank remittance to air via
+
+DOME
+
+    data user will typein: period(start - end)
+
+    SELECT row_number() over(order by Blank.blankID) as row_number, blankID, sumPriceLocalCurrency, sumPriceUSD, cashPayment, creditCardPayment, tax,（sumPriceLocalCurrency + tax）, (cashPayment + creditCardPayment), note FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.exChangeRateID = ExChangeRate.exChangeRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (201 or 101) AND "start"<Sales.generationDate<"end";
+    // list all the info about the domestic blank
+
+    SELECT COUNT(blankID), SUM(sumPriceLocalCurrency), SUM(sumPriceUSD),SUM(cashPayment),SUM(creditCardPayment), SUM(tax), SUM(sumPriceLocalCurrency+creditCardPayment+tax), SUM(cashPayment+creditCardPayment)FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (201 or 101) AND "start"<Sales.generationDate<"end"; 
+    // calculate total 
+
+    SELECT SUM(cashPayment+creditCardPayment)*CommissionRate FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (201 or 101) AND "start"<Sales.generationDate<"end"; 
+    // calculate total commission rate
+
+    SELECT SUM(cashPayment+creditCardPayment)*(1-CommissionRate) FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (201 or 101) AND "start"<Sales.generationDate<"end"; 
+    // calculate net amount for agent debit
+
+    SELECT SUM(sumPriceLocalCurrency+creditCardPayment+tax) - SUM(cashPayment+creditCardPayment)*CommissionRate FROM Sales INNER JOIN Blank, CommissionRate, ExChangeRate ON (Sales.commissionRateID = CommissionRate.commissionRateID AND Sales.blankID = Blank.blankID) WHERE blankType = (201 or 101) AND "start"<Sales.generationDate<"end"; 
+    // calculate total net amount for bank remittance to air via

@@ -1,0 +1,141 @@
+1. Login
+    User type in: staffID(sid), password
+    
+    a. read encryption salt
+        SELECT encryptionSalt FROM EncryptionSalt INNER JOIN Staff ON EncryptionSalt.encryptionSaltID = Staff.encryptionSaltID;
+    
+    java calculate the encrypted password(x) by using the password user type in and the encryptionSalt
+
+    b. retreat the password store in the data base
+        SELECT password FROM Staff where staffID = sid
+
+    compare x and password we just got 
+        True: Get the StaffType, open corresponding staff type window 
+            SELECT StaffType FROM Staff where staffID = sid
+        False: Reject login
+
+
+2. System administrator Home Page
+    Pure java 
+
+
+3. System administrator Database
+
+
+4. System administrator stock
+    a. Show all the blanks has been assigned and their corresponding staff
+
+        SELECT blankID, staffID From Assignment
+
+    b. Change Blank holder
+    
+        User type in: new blank holder(nbh)
+        System provide: staffID(sid), old blankID(obid)
+            UPDATE Assignment SET staffID = "nbh" WHERE blankID="obid" AND staffID = "sid";
+
+
+
+5. System administrator add blank 
+    User type in blankID(bid), blankType(bt), departureLocation(dl), arrivalLocation(al)
+    system provide: staffID(sid), todayDate(today)
+    system generate: assignmentID(aid)
+        INSERT INTO Assignment(assignmentID, blankID, staffID, AssignmentDate) Values(aid, bid, sid, today)
+        UPDATE Blank SET blankType = bt, departureLocation = dl, arrivalLocation = al WHERE blankID = bid;
+
+
+
+6. System administrator create staff account        need password
+    User type in first name(fn), last name(ln), email(email)， accessLevel(al)
+    system compute: name = fn + ln, staffID(sid), encrypted password(ep)
+    system generate: encryptionSalt(es), encryptionSaltID(esid)
+    INSERT INTO EncryptionSalt(encryptionSaltID, encryptionSalt) Values(esid, es);
+    INSERT INTO STAFF(staffID, staffEmail, name, password, staffType, encryptionSalt) Values(sid, email, name, ep, al, es)
+
+
+
+7. Travel Advisor Home page
+    Pure JAVA GUI
+
+
+
+8. Travel Advisor Access Report
+    see DB schema
+
+
+9. Travel Advisor Cancel Ticket
+    User type in: ticketID(tid), refundAmount(ra)
+    UPDATE Blank SET blankStatus = "cancel" WHERE ticketID = "tid"
+
+
+10. Travel Advisor Select Ticket
+    User type in: blankID(bid), customerEmail(cemail)
+    Pure java, only store these data to the database once the payment is finished 
+
+
+
+11. Travel Advisor Card Payment
+    Should we store card info?
+    Yes:
+        Re create the er diagram and DB structure
+    No:
+        Change GUI design
+        Only store cardPayment amount
+        
+    This GUI makes no sense to me
+
+
+12. Travel Advisor Cash payment
+    This GUI makes no sense to me 
+
+
+13. Travel Advisor Create account 
+    Missing Customer type as an input
+    Remove the encryptionSaltID and the connection with EncryptionSalt table
+
+    User type in: first name(fn), last name(ln), email(email), customerType(ct)
+    System combine first name and last name into one variable(name)
+
+    INSERT INTO Customer(customerEmail, name, customerType) VALUES (email, name, ct)
+
+
+14. Travel Advisor Exchange Rate
+    Staff can change the exchange rate before sell the blank, er diagram should be changed. Connecting ExchangeRate table with staff
+
+    System pass in: staffID(sid)
+    Get current exchange Rate
+        SELECT exchangeRate FROM ExchangeRate INNER JOIN Staff ON Staff.exchangeRateID = ExchangeRate.exchangeRateID
+    Set new exchange rate
+        user type in: new exchange rate(ner)
+        UPDATE ExchangeRate Set exchangeRate = "ner" WHERE exchangeRateID IN (SELECT exchangeRateID FROM Staff WHERE staffID = "sid")
+
+
+
+15. Office Manger Home Page
+    Pure Java No need DB
+
+
+16. Office Manager Ticket
+        Pure Java No need DB
+
+
+17. Office Manager settings
+    System Pass in SalesID(saleid), staffID(sid)
+
+    Commission Rate
+        Reconnect the commission Rate Table with Staff
+        Show current Commission Rate
+            SELECT commissionRate FROM commissionRate INNER JOIN Staff ON Staff.commissionRateID = commissionRate.commissionRateID
+        Set new commission rate(ncr)
+            user type in: new commission rate(ncr)
+            UPDATE commissionRate Set commissionRate = "ncr" WHERE commissionRateID IN (SELECT commissionRateID FROM Staff WHERE staffID = "sid")
+    Exchange Rate
+        Reconnect the Exchange Rate table with Staff
+        Get current exchange Rate
+            SELECT exchangeRate FROM ExchangeRate INNER JOIN Staff ON Staff.exchangeRateID = ExchangeRate.exchangeRateID
+        Set new exchange rate
+            user type in: new exchange rate(ner)
+            UPDATE ExchangeRate Set exchangeRate = "ner" WHERE exchangeRateID IN (SELECT exchangeRateID FROM Staff WHERE staffID = "sid")
+    Flexible 
+        Flexible discount is not on the er diagram
+    Fixed
+        fixed discount is not on the er diagram

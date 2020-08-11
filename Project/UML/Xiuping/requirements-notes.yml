@@ -1,0 +1,33 @@
+Nouns:
+    - Ticket:
+        - Ticket Type
+    - Customer
+    - Report
+    - Discount
+    - Flight Coupon
+    - Auditor's Coupon
+    - Blanks (bundles of coupons)
+    - Commission
+    - Sales
+    - Travel Agent Contact Details:
+        - Name
+        - Address
+
+Potential Users:
+    - Travel Agent
+    - Office Manager
+    - Travel Advisor
+    - Customer
+    - System Administrator
+
+Potential use cases:
+    - Travel Agents produce Reports (monthly)
+    - Travel Advisors sells Tickets to Customers
+    - Travel Advisors give Discount to Customers 
+    - Office Manager allocates blanks to travel advisors
+    - System Administrators maintains stock levels (replenishes stock?)
+    - System Administrators fixes problems with the database:
+        - Backup database
+        - Restore database
+    - Customer can cancel Tickets
+

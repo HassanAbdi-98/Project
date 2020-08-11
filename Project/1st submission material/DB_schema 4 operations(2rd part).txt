@@ -1,0 +1,41 @@
+ Staff login:
+        GUI typein: STAFFID(sid), PASSWORD(pw)---plaintext
+
+        SELECT EncryptionSalt.encryptionSalt FROM Staff INNER JOIN EncryptionSalt ON Staff.encryptionSaltID = EncryptionSalt.encryptionSaltID WHERE Staff.staffID = "sid";
+            // Identify the encryptionSalt where used to encrypt the password
+
+        SELECT password FROM Staff WHERE STAFFID="sid"
+            // Get the password user got
+
+        // If user enters the incorrect password system will reject the login
+    
+        // If user enters the correct password system approves the login and change the encryptionSalt to improve the security.
+        
+        
+        System will generate a random number(xyz) as new encryption salt
+        UPDATE EncryptionSalt SET encryptionSalt = "xyz" FROM Staff INNER JOIN EncryptionSalt ON Staff.encryptionSaltID = EncryptionSalt.encryptionSaltID WHERE staffID="sid"
+            // update the encryption salt 
+
+        system will generate new encrypted password(abc) based on the plaintext password and new encryption salt
+        UPDATE Staff SET password = "abc" FROM STAFF WHERE staffID="sid"
+            // update the new encrypted password in to the system
+
+
+Add new sales
+        GUI typein: customerEmail(ce), blankID(bID), cashPayment(cash), creditCardPayment(card)
+        system calculate: tax(tax), generationDate(today), salesID(sID), sumPriceLocalCurrency(sumLocal), sumPriceUSD(sumUSD), blankID, ,commissionRateID(cid), exchangeRateID(eid), customerEmail(cEmail)
+        INSERT INTO Sales (salesID, tax, cashPayment, creditCardPayment, paymentReceived, generationDate, sumPriceLocalCurrency, sumPriceUSD,commissionRateID, exchangeRateID, customerEmail, blankID) VALUES ("sID", "tax", "cash", "card", "1", "today", "sumLocal", "sumUSD", "bID", "cID", "eID", "bID");
+Add new blank(when Office manger first time create it)
+        GUI typein: blankType(bt), departureLocation(dl), arrivalLocation(al)
+        system generate: blankID(bID)
+        INSERT INTO Blank (blankID, blankType, departureLocation, arrivalLocation,blankStatus) VALUES ("bID","bt","dl","al","Waiting");
+
+Delete overdue sales
+        input: todayDate(today)
+        system calculate the date which is 30 days before (date)
+        DELETE FROM Sales WHERE (generationDate = "date") AND (paymentReceived = "0");
+            Delete the sales that has been payed in past 30 days
+
+Delete the blank need to return to airline
+        input: blankID(bID)
+        DELETE FROM Blank WHERE blankID = "bID";

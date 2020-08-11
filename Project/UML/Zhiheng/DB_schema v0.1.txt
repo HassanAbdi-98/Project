@@ -1,0 +1,48 @@
+CREATE TABLE Staff(
+    staffEmail varchar(255),
+    staffID integer(7),
+    name varchar(255),
+    password varchar(64),
+    PRIMARY KEY (staffEmail)
+);
+
+
+CREATE TABLE Blank(
+    blankID integer(11),
+    blankType integer(3),
+    departureLocation varchar(255),
+    arrivalLocation varchar(255),
+    customerEmail varchar(255),
+    generationDate date,
+    staffID integer(7),
+    priceLocalCurrency float(10),
+    exchangeRate float(9),
+    commissionRate float(7),
+    payMethod varchar(5),
+    lzTax float(10),
+    tax float(10),
+    note varchar(255),
+    note2 varchar(255),
+    blankStatus varchar(7),
+    PRIMARY KEY (blankID)
+);
+
+
+CREATE TABLE Customer(
+    customerEmail varchar(255),
+    name varchar(255),
+    password varchar(64),
+    customerType varchar(7),
+    PRIMARY KEY (customerEmail)
+);
+
+
+CREATE TABLE Setting(
+    exchangeRate float(9),
+    commissionRate float(7),
+    encryptionSalt integer(10)
+);
+
+
+
+

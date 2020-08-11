@@ -1,0 +1,16 @@
+Use Case: CreateSalesReport
+ID: 
+Brief Description: Produce a sales report at the end of every month 
+Primary Actors: Time
+Secondary Actors: Travel Agent
+Preconditions: 
+    - It is the end of the month
+Main Flow:
+    - The use case starts when it is the of the month
+    - The System determines the total amount of sales made within the month
+    - The System produces a sales report and emails it to the finance department
+Postconditions: The finance department receives a correct report of sales
+Alternative Flows:
+    - The use case starts when the Travel Agent requests to download a Sales Report
+    - The System determines the total amount of sales made from the start of the month to the current time
+    - The System produces a sales report and downloads it to the Travel Agents terminal

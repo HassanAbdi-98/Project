@@ -1,0 +1,28 @@
+Old system description
+
+
+The software they have used for 20 years has reached the point where its further maintenance is problematic and they want a new software product to reflect the recent advances in user interfaces and more flexibility, which will eliminate the difficulties and limitations of the old software. AirVia Ltd want to evaluate the new software before they decide whether to make it mandatory for all travel agents selling their tickets.
+
+20years
+Further maintenance is problematic	overflow, Y2K windowing
+Not flexible 
+Difficult and limitations
+(May be) not all the travel agent were using the old system
+
+
+P14
+
+1. Old fashioned UI
+No GUI
+Hard tp use
+
+2. No security/one level security
+	one user have the access of the entire system
+
+3. Functional limitations
+
+	a. Fixed exchange rate with USD, hard code is the only way to change the exchange rate
+	b. Commission rate is hard coded, every time the commission rate changes, it causes the version compatibility problem
+	c. Very limited way to identify different types of customers
+
+The current system AirVia uses is an old system, it has been used for more than 20 years, the data in the system is reaching the edge of overflow and the Y2K problem may occur any time as the time system was fixed by "windowing" method rather than the rewrite. There is no graphical user interface for the current system, which makes the new employee, especially for the younger generation, feel hard to involve. For the current system, there is only one type of user that can have access of the entire system, which makes the data insecure and difficult to manage. If the customer or travel agent is paid by foreign currency the exchange rate has to be manually checked and updated by the office manager, AirVia often loses money by that. The commission rate for each travel agent might be different subject to different cases, it is very hard to change the hardcoded commission rate due to the version compatibility problem. Lastly, there are very limited ways to categories the customers which leads the difficulty in the business analysis.

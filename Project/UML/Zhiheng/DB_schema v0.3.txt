@@ -1,0 +1,219 @@
+CREATE TABLE STAFF( 
+
+    STAFFID INTEGER(7) NOT NULL UNIQUE, 
+
+    PASSWORD VARCHAR(64) NOT NULL, 
+
+    NAME VARCHAR(255), 
+
+    ENCRYPTIONSALT INTEGER(10) NOT NULL, 
+
+    STAFTYPE INTEGER(1) NOT NULL,
+
+    PRIMARY KEY (STAFFID) 
+
+); 
+
+ 
+
+ 
+
+ 
+
+ 
+
+CREATE TABLE BLANK( 
+
+    BLANKID INTEGER(11), 
+
+    BLANKTYPE INTEGER(3) NOT NULL, 
+
+    DEPARTURELOCATION VARCHAR(255), 
+
+    ARRIVALLOCATION VARCHAR(255), 
+
+    CUSTOMEREMAIL VARCHAR(255), 
+
+    GENERATIONDATE DATE, 
+
+    STAFFID INTEGER(7), 
+
+    PRICELOCALCURRENCY FLOAT(10), 
+
+    EXCHANGERATE FLOAT(9), 
+
+    COMMISSIONRATE FLOAT(7), 
+
+    PAYMETHOD VARCHAR(5), 
+
+    TAX FLOAT(10), 
+
+    NOTE VARCHAR(255), 
+
+    NOTE2 VARCHAR(255), 
+
+    BLANKSTATUS VARCHAR(8),
+
+    CASHPAYMENT DOUBLE(10),
+
+    CREDITCARDPAYMENT DOUBLE(10) 
+
+    PRIMARY KEY (BLANKID), 
+
+    FOREIGN KEY (CUSTOMEREMAIL) REFERENCES CUSTOMER(CUSTOMEREMAIL), 
+
+    FOREIGN KEY (STAFFID) REFERENCES STAFF(STAFFID) 
+
+); 
+
+ 
+
+ 
+
+ 
+
+ 
+
+CREATE TABLE CUSTOMER( 
+
+    CUSTOMEREMAIL VARCHAR(255) NOT NULL UNIQUE, 
+
+    NAME VARCHAR(255), 
+
+    PASSWORD VARCHAR(64) NOT NULL, 
+
+    CUSTOMERTYPE VARCHAR(7) NOT NULL, 
+
+    ENCRYPTIONSALT INTEGER(10) NOT NULL, 
+
+    PRIMARY KEY (CUSTOMEREMAIL) 
+
+); 
+
+ 
+
+ 
+
+ 
+
+ 
+
+CREATE TABLE SETTING( 
+
+    EXCHANGERATE FLOAT(9), 
+
+    COMMISSIONRATE FLOAT(7), 
+
+    ENCRYPTIONSALT INTEGER(10) 
+
+);
+
+
+
+
+SQL Dialect: MYSQL
+
+Some operations
+    Staff login:
+        GUI typein: STAFFID(se), PASSWORD(pw) 
+
+        SELECT ENCRYPTIONSALT FROM STAFF WHERE STAFFID="sid"
+            // Identify the encryptionSalt where used to encrypt the password
+
+        SELECT PASSWORD FROM STAFF WHERE STAFFID="sid"
+            // Check the password validation
+
+        SELECT ENCRYPTIONSALT From SETTING
+            // Get most recent encryptionSalt
+            // assign it to variable (es)
+            // and recalculate the password by encryption algorithm and (es) then name it (npw)
+
+        UPDATE STAFF SET PASSWORD = npw FROM STAFF WHERE STAFFEMAIL="se"
+        UPDATE STAFF SET ENCRYPTIONSALT = es FROM STAFF WHERE STAFFEMAIL="se"
+            // if user entered the correct password update 
+
+
+
+    Create Customer Account:
+        GUI typein: email(email), password(pw), name(n)
+
+        SELECT EMAIL FROM CUSTOMER where EMAIL = email
+            // check is customer already registered 
+
+        SELECT ENCRYPTIONSALT FROM SETTING
+            // get most recent encryptionSalt and store it to variable (es)
+            // generate password based on encryptionSalt and encrypt algorithm
+
+        INSERT INTO CUSTOMER(CUSTOMEREMAIL, PASSWORD, NAME) VALUES (email, es, n)
+
+    
+    Customer cancel Ticket:
+        GUI typein: blankID(bid)
+        
+        UPDATE BLANK SET BLANKSTATUS = "CANCEL" WHERE BLANKID = bid
+
+    customer Refund Ticket:
+        GUI typein: blankID(bid)
+
+        SELECT * FROM BLANK WHERE BLANKID = bid
+            // record information and do the calculation 
+        DELETE FROM TICKET WHERE BLANKID = bid
+        INSERT INTO BLANK (BLANKID, BLANKTYPE, DEPARTURELOCATION, ARRIVALLOCATION, GENERATIONDATE, STAFFID, BLANKSTATUS) VALUES (bid, bt, dl, al, gd, sid, "REFUNDED")
+
+    travel advisor resign from the company
+        GUI typein: staffID(sid)
+        
+        DELETE FROM STAFF WHERE STAFFID = sid
+
+    Stock report
+        GUI typein: period(p)
+        
+        perceived blank
+            CREATE TEMPORARY TABLE Temp_perceived (SELECT * FROM BLANK WHERE BLANKSTATUS = "Waiting" AND GENERATIONDATE > p.first AND GENERATIONDATE < p.second)
+                // create a temp table that are perceived
+            
+
+
+            SELECT MIN(T.BLANKID) fromBlankID,MAX( T.BLANKID) ToBlankID, count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_perceived) AS T GROUP BY RKG
+                // create perceived agent stock
+
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_perceived) AS T GROUP BY RKG)
+                // calculate total for perceived agent stock
+
+            CREATE TEMPORARY TABLE Temp_perceived_agent (SELECT *, ROW_NUMBER() over(partition by STAFFID order by blankID order by BLANKID) as rownum from Temp_perceived)
+            SELECT STAFFID, MIN(BLANKID), MAX(BLANKID), count(BLANKID) FROM Temp_perceived_agent GROUP BY STAFFID, BLANKID-rownum
+                // create perceived sub stock
+
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(BLANKID) FROM Temp_perceived_agent GROUP BY STAFFID, BLANKID-rownum)
+                // calculate total for perceived sub agent stock
+
+
+        Assigned / Used blank
+            CREATE TEMPORARY TABLE Temp_Assigned (SELECT * FROM BLANK WHERE BLANKSTATUS = "ASSIGNED" AND GENERATIONDATE > p.first AND GENERATIONDATE < p.second)
+            CREATE TEMPORARY TABLE Temp_Used (SELECT * FROM BLANK WHERE BLANKSTATUS = "USED" AND GENERATIONDATE > p.first AND GENERATIONDATE < p.second)
+                // create a temp table that are assigned / used
+
+            SELECT STAFFID, MIN(T.BLANKID) fromBlankID,MAX( T.BLANKID) ToBlankID, count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Assigned) AS T GROUP BY RKG
+                // create assigned stock
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Assigned) AS T GROUP BY RKG)
+                // calculate the total for assigned stock
+            
+            SELECT MIN(T.BLANKID) fromBlankID,MAX( T.BLANKID) ToBlankID, count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Used) AS T GROUP BY RKG
+                // create used Stock
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Used) AS T GROUP BY RKG)
+                // calculate the total for used stock
+
+            CREATE TEMPORARY TABLE Temp_Final (SELECT * FROM Temp_Assigned as X LEFT JOIN Temp_Used as Y on X.BLANKID=Y.BLANKID WHERE B.BLANKID IS NULL)
+                // create a temp table for final Amount
+            SELECT MIN(T.BLANKID) fromBlankID,MAX( T.BLANKID) ToBlankID, count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Final) AS T GROUP BY RKG
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Final) AS T GROUP BY RKG)
+
+            SELECT STAFFID, MIN(T.BLANKID) fromBlankID,MAX( T.BLANKID) ToBlankID, count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Final) AS T GROUP BY RKG
+            SELECT SUM(count(T.BLANKID)) FROM (SELECT count(T.BLANKID) Amount FROM (SELECT  *,BLANKID - ROW_NUMBER() OVER(ORDER BY BLANKID) RKG FROM Temp_Final) AS T GROUP BY RKG)
+
+    Inter sales report
+            SELECT BLANKID, PRICELOCALCURRENCY*EXCHANGERATE, EXCHANGERATE, PRICELOCALCURRENCY, TAX, PRICELOCALCURRENCY+TAX, CASHPAYMENT, CREDITCARDPAYMENT, CASHPAYMENT+CREDITCARDPAYMENT, (CASHPAYMENT+CREDITCARDPAYMENT)*COMMISSIONRATE FROM BLANK WHERE PERIODSTARTDATE < GENERATIONDATE < PERIODENDDATE
+            
+            SELECT SUM(PRICELOCALCURRENCY*EXCHANGERATE), SUM(PRICELOCALCURRENCY), SUM(TAX), SUM(PRICELOCALCURRENCY+TAX), SUM(CASHPAYMENT),SUM(CREDITCARDPAYMENT),SUM(CREDITCARDPAYMENT+CASHPAYMENT), SUM(SUM(CREDITCARDPAYMENT+CASHPAYMENT)*COMMISSIONRATE) FROM BLANK WHERE PERIODSTARTDATE < GENERATIONDATE < PERIODENDDATE
+                // calculate  total
+
